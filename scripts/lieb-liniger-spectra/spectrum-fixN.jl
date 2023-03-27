@@ -63,7 +63,7 @@ function fN(ψ::CMPSData)
     return real(tr(expK * ON))
 end
 
-@load "tmpdata/cmps_c$(c)_mu$(μ)_L$(L).jld2" ψ3 ψ4 ψ5
+@load "data/cmps_c$(c)_mu$(μ)_L$(L).jld2" ψ3 ψ4 ψ5
 
 ψ = ψ5
 χ = get_χ(ψ)
@@ -81,7 +81,7 @@ Vs_cmps = []
 
 for k in -3:3
     global momenta_cmps, energies_cmps, numbers_cmps
-    @load "tmpdata/excitation_c$(c)_mu$(μ)_L$(L)_k$(k)_chi$(χ).jld2" H1 N1 M1
+    @load "data/excitation_c$(c)_mu$(μ)_L$(L)_k$(k)_chi$(χ).jld2" H1 N1 M1
 
     H̃1 = sqrt(inv(N1)) * H1 * sqrt(inv(N1))
     M̃1 = sqrt(inv(N1)) * M1 * sqrt(inv(N1))
@@ -154,8 +154,8 @@ for k in -3:3
     end
 end
 
-@save "tmpdata/ovlps_cmps_c$(c)_mu$(μ)_L$(L).jld2" chiral_ovlps_gs_cmps antichiral_ovlps_gs_cmps chiral_ovlps_ψ1_cmps antichiral_ovlps_ψ1_cmps energies_cmps numbers_cmps momenta_cmps 
-@load "tmpdata/ovlps_cmps_c$(c)_mu$(μ)_L$(L).jld2" chiral_ovlps_gs_cmps antichiral_ovlps_gs_cmps chiral_ovlps_ψ1_cmps antichiral_ovlps_ψ1_cmps energies_cmps numbers_cmps momenta_cmps 
+@save "data/ovlps_cmps_c$(c)_mu$(μ)_L$(L).jld2" chiral_ovlps_gs_cmps antichiral_ovlps_gs_cmps chiral_ovlps_ψ1_cmps antichiral_ovlps_ψ1_cmps energies_cmps numbers_cmps momenta_cmps 
+@load "data/ovlps_cmps_c$(c)_mu$(μ)_L$(L).jld2" chiral_ovlps_gs_cmps antichiral_ovlps_gs_cmps chiral_ovlps_ψ1_cmps antichiral_ovlps_ψ1_cmps energies_cmps numbers_cmps momenta_cmps 
 # ============ the plot ============ 
 
 CM = maximum(norm.(vcat(chiral_ovlps_gs, antichiral_ovlps_gs)))

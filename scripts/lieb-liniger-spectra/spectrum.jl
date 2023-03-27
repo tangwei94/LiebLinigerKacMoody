@@ -19,7 +19,7 @@ function fN(ψ::CMPSData)
     return real(tr(expK * ON))
 end
 
-@load "tmpdata/cmps_c$(c)_mu$(μ)_L$(L).jld2" ψ3 ψ4 ψ5
+@load "data/cmps_c$(c)_mu$(μ)_L$(L).jld2" ψ3 ψ4 ψ5
 
 ψ = ψ5
 χ = get_χ(ψ)
@@ -42,7 +42,7 @@ numbers_cmps = [Ngs_cmps]
 
 for k in -3:3
     global momenta_cmps, energies_cmps, numbers_cmps
-    @load "tmpdata1/excitation_c$(c)_mu$(μ)_L$(L)_k$(k)_chi$(χ).jld2" H1 N1 M1
+    @load "data1/excitation_c$(c)_mu$(μ)_L$(L)_k$(k)_chi$(χ).jld2" H1 N1 M1
 
     @show norm(H1 - H1') / χ^4 
     @show norm(N1 - N1') / χ^4

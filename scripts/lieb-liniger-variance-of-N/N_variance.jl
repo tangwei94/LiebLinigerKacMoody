@@ -48,7 +48,7 @@ VarNs_12 = Float64[];
 VarNs_16 = Float64[];
 VarNs_20 = Float64[];
 for L in Ls
-    @load "tmpdata/cmps_c$(c)_mu$(μ)_L$(L).jld2" ψ3 ψ4 ψ5
+    @load "data/cmps_c$(c)_mu$(μ)_L$(L).jld2" ψ3 ψ4 ψ5
     
     push!(VarNs_12, real(varN(ψ3, L)))
     push!(VarNs_16, real(varN(ψ4, L)))
