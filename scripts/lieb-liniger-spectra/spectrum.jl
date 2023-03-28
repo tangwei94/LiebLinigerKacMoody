@@ -42,7 +42,7 @@ numbers_cmps = [Ngs_cmps]
 
 for k in -3:3
     global momenta_cmps, energies_cmps, numbers_cmps
-    @load "data1/excitation_c$(c)_mu$(μ)_L$(L)_k$(k)_chi$(χ).jld2" H1 N1 M1
+    @load "data/excitation_c$(c)_mu$(μ)_L$(L)_k$(k)_chi$(χ).jld2" H1 N1 M1
 
     @show norm(H1 - H1') / χ^4 
     @show norm(N1 - N1') / χ^4

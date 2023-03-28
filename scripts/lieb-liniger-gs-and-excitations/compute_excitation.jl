@@ -29,4 +29,4 @@ H1 = effective_H(ψ, p, L; c=c, μ=μ)
 M1 = effective_H(ψ, p, L; c=0, μ=-1, k0=0)
 @show norm(M1 - M1') / χ^4
 
-@save "data1/excitation_c$(c)_mu$(μ)_L$(L)_k$(k)_chi$(χ).jld2" H1 N1 M1 
+@save "data/excitation_c$(c)_mu$(μ)_L$(L)_k$(k)_chi$(χ).jld2" H1 N1 M1 
