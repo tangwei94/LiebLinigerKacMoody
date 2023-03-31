@@ -1,10 +1,9 @@
-using CircularCMPS
-using JLD2 
 using TensorKit, LinearAlgebra 
 using LiebLinigerBA
+using CircularCMPS
+using JLD2 
 using CairoMakie
 
-#c, μ, L = 1, 1.42, 8
 c, μ, L = 1, 1.426, 16
 
 function fE(ψ::CMPSData)
@@ -33,7 +32,6 @@ opN2 = sum(K_otimes.(ψ.Rs .* ψ.Rs, ψ.Rs .* ψ.Rs))
 Kmat = K_mat(ψ, ψ)
 expK, α = finite_env(Kmat, L)
 C2 = Coeff2(Kmat, 0, L)
-#VarN = C2(opN, opN) + tr(expK * opN2) + Ngs_cmps / L - Ngs_cmps 
 VarN = C2(opN, opN) + Ngs_cmps / L - Ngs_cmps
 
 momenta_cmps = [0.0]
@@ -57,7 +55,8 @@ for k in -3:3
     numbers_cmps = vcat(numbers_cmps, real.(diag(Vs' * M̃1 * Vs)))
 end
 
-msk_cmps = abs.(numbers_cmps .- Ngs) .< 0.5 # use colors to mark the accuracy
+#Ngs = 16
+#msk_cmps = abs.(numbers_cmps .- Ngs) .< 0.5 # use colors to mark the accuracy
 
 ### BA solution
 # go through different particle numbers
@@ -109,8 +108,8 @@ scale_p(x::Float64) = x * L / (2 * pi)
 msk_ba = abs.(numbers .- Ngs) .< 1e-4
 
 # plot the spectrum. 
-font1 = Makie.to_font("/home/wtang/.local/share/fonts/STIXTwoText-Regular.otf")
-fig = Figure(backgroundcolor = :white, fontsize=18, resolution= (600, 400), fonts=(; regular=font1))
+#font1 = Makie.to_font("/home/wtang/.local/share/fonts/STIXTwoText-Regular.otf")
+fig = Figure(backgroundcolor = :white, fontsize=18, resolution= (600, 400))#, fonts=(; regular=font1))
 #gf = fig[1, 1] = GridLayout() 
 #gl = fig[2, 1] = GridLayout()
 
@@ -124,8 +123,8 @@ ax1 = Axis(fig[1, 1],
 
 ylims!(ax1, (-0.15, 3.5))
 
-sc1_ba = scatter!(ax1, scale_p.(momenta) .- 0.05 .* (numbers .- Ngs), scale_E.(energies), color=:red3, marker='X', markersize=15, label="BA")
-sc1_cmps = scatter!(ax1, scale_p.(momenta_cmps) .- 0.05 .* (numbers_cmps .- Ngs), scale_E.(energies_cmps), color=:blue3, marker='O', markersize=15, label="cMPS")
+sc1_ba = scatter!(ax1, scale_p.(momenta) .- 0.05 .* (numbers .- Ngs), scale_E.(energies), color=:red3, marker='X', markersize=15, label=L"\text{BA}")
+sc1_cmps = scatter!(ax1, scale_p.(momenta_cmps) .- 0.05 .* (numbers_cmps .- Ngs), scale_E.(energies_cmps), color=:blue3, marker='O', markersize=15, label=L"\text{cMPS}")
 
 axislegend(ax1, position=:lb, framevisible=true, labelsize=14)
 @show fig
@@ -145,4 +144,4 @@ axislegend(ax1, position=:lb, framevisible=true, labelsize=14)
 
 @show fig
 
-Makie.save("fig-cmps-spect-c$(c)-L$(L)-N$(Ngs)-chi$(χ).pdf", fig)
+Makie.save("scripts/lieb-liniger-spectra/fig-cmps-spect-c$(c)-L$(L)-N$(Ngs)-chi$(χ).pdf", fig)

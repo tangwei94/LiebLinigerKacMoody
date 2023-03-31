@@ -1,11 +1,7 @@
-using LinearAlgebra
-using LaTeXStrings
-using CairoMakie
-using LiebLinigerBA
-using Colors
+using LinearAlgebra, TensorKit
+using LaTeXStrings, CairoMakie, Colors
 using JLD2
-using TensorKit
-using Revise
+using LiebLinigerBA
 using CircularCMPS
 
 c, μ, L = 1, 1.426, 16
@@ -107,7 +103,6 @@ antichiral_ovlps_gs_cmps = Float64[0]
 chiral_ovlps_ψ1_cmps = Float64[]
 antichiral_ovlps_ψ1_cmps = Float64[]
 
-### TODO. write a test . ovlpj01 ovlpj10 . j expectation = 2p 
 for k in -3:3
     for ix in eachindex(Es_cmps[4+k])
         global chiral_ovlps_gs_cmps, antichiral_ovlps_gs_cmps, Vs_cmps
@@ -167,7 +162,7 @@ mycmap = vcat(a, b)
 function plot_spect(ax, ψi, ovlps)
     msk = isapprox.(momenta .+ 0.1, momentum(ψi) + 0.1) .& isapprox.(energies, energy(ψi))
     msk = .~(msk)
-    sc_main = scatter!(ax, momenta[msk] .* L ./ (2*pi), scale_E.(energies[msk]), color=real.(ovlps[msk]), colormap=mycmap, colorrange=(-CM, CM), marker='X', markersize=15, label="BA")
+    sc_main = scatter!(ax, momenta[msk] .* L ./ (2*pi), scale_E.(energies[msk]), color=real.(ovlps[msk]), colormap=mycmap, colorrange=(-CM, CM), marker='X', markersize=15, label=L"\text{BA}")
     return sc_main
 end
 
@@ -177,7 +172,7 @@ function plot_spect_cmps(ax, exclusion, ovlps)
     msk = (abs.(scale_E_cmps.(energies_cmps) .- exclusion[2]) .< 1e-2) .& (abs.(momenta_cmps .- exclusion[1]*2*pi/L) .< 1e-2)
     msk = .~(msk)
 
-    sc_main = scatter!(ax, momenta_cmps[msk] .* L ./ (2*pi), scale_E_cmps.(energies_cmps[msk]), color=ovlps[msk], colormap=mycmap, colorrange=(-CM, CM), marker='O', markersize=15, label="cMPS")
+    sc_main = scatter!(ax, momenta_cmps[msk] .* L ./ (2*pi), scale_E_cmps.(energies_cmps[msk]), color=ovlps[msk], colormap=mycmap, colorrange=(-CM, CM), marker='O', markersize=15, label=L"\text{cMPS}")
     return sc_main
 end
 
@@ -185,8 +180,8 @@ end
 horizon_xs = 5.8 * sin.(θs)
 horizon_ys = 2.7 * cos.(θs)
 
-font1 = Makie.to_font("/home/wtang/.local/share/fonts/STIXTwoText-Regular.otf")
-fig = Figure(backgroundcolor = :white, fontsize=18, resolution= (600, 500), fonts=(; regular=font1))
+#font1 = Makie.to_font("/home/wtang/.local/share/fonts/STIXTwoText-Regular.otf")
+fig = Figure(backgroundcolor = :white, fontsize=18, resolution= (600, 500))#, fonts=(; regular=font1))
 gf = fig[1, 1] = GridLayout() 
 gl = fig[2, 1] = GridLayout()
 
@@ -266,7 +261,7 @@ chiral_ovlps_gs_cmps[msk_cmps][order_cmps]
 
 myround(x) = round(x, digits=4)
 
-open("scripts/lieb-liniger-spectra/fig-cmps-spect-a-result.txt","w") do io
+open("scripts/lieb-liniger-spectra/fig-cmps-spect-detailed-data.txt","w") do io
    println(io, "momenta ba ", myround.(momenta[msk][order] ./ (2*pi/L)))
    println(io, "momenta cmps ", myround.(momenta_cmps[msk_cmps][order_cmps] ./ (2*pi/L)))
    println(io, "N cmps ", myround.(real.(numbers_cmps[msk_cmps][order_cmps])))
