@@ -5,7 +5,6 @@ using LiebLinigerBA
 using CairoMakie
 using Polynomials
 
-#c, μ, L = 1, 1.42, 8
 c, μ = 1, 1.426
 
 function fE(ψ::CMPSData, L)
