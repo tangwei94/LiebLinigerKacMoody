@@ -168,6 +168,15 @@ end
 
 c, L, μ = 1, 32, 4
 
+## exact
+Nmax = 100
+ψs = [ground_state(c, L, Nx) for Nx in 2:Nmax]
+Es = [energy(ψi, μ) for ψi in ψs]
+
+# find the ground state
+Eexact, gs_index = findmin(Es)
+Eexact /= L
+
 ## cMPS optimization
 χ = 12
 ψ0 = CMPSData(rand, χ, 1)
@@ -182,13 +191,12 @@ max_steps = 10000
 @load "data/benchmark-history_c$(c)_mu$(μ)_L$(L)_chi$(χ).jld2" history1 history2 history3 history4
 
 error_in_E(x) = abs((x - Eexact) / Eexact) 
-@show error_in_E.([E1, E2, E3, E4])
 
 N1, _ = size(history1)
 N2, _ = size(history2)
 N3, _ = size(history3)
 N4, _ = size(history4)
-Nmin = 1
+Nmin = 100
 
 #font2 = Makie.to_font("/home/wtang/.local/share/fonts/STIXTwoText-Regular.otf")
 fig = Figure(backgroundcolor = :white, fontsize=18, resolution= (600, 600))#, fonts=(; regular=font2))
