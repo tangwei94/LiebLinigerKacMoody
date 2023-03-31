@@ -1,3 +1,5 @@
+# run this script with multi-threading 
+
 using CircularCMPS
 using JLD2
 using TensorKit, LinearAlgebra
