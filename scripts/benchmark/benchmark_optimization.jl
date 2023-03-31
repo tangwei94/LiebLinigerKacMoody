@@ -11,18 +11,16 @@ function lieb_liniger_ground_state_riemannian(c::Real, μ::Real, L::Real, ψ0::U
         return real(tr(expK * OH))
     end
 
-    # TODO. implement gradientcheck: check inner(d, g) = gradient with respect to alpha obtained from finite difference.
     function fgE(ψ::CMPSData)
         E = fE(ψ)
         ∂ψ = fE'(ψ) 
         dQ = zero(∂ψ.Q) #- sum(ψ.Rs' .* ∂ψ.Rs)
-        dRs = ∂ψ.Rs .- ψ.Rs .* Ref(∂ψ.Q) #the second term makes sure it is a true gradient! 
+        dRs = ∂ψ.Rs .- ψ.Rs .* Ref(∂ψ.Q)  
 
         return E, CMPSData(dQ, dRs)
     end
 
     function inner(ψ, ψ1::CMPSData, ψ2::CMPSData)
-        #return real(dot(ψ1.Q, ψ2.Q) + sum(dot.(ψ1.Rs, ψ2.Rs))) #TODO. clarify the cases with or withou factor of 2. depends on how to define the complex gradient
         return real(sum(dot.(ψ1.Rs, ψ2.Rs))) 
     end
 
@@ -168,15 +166,7 @@ function lieb_liniger_ground_state_ordinary(c::Real, μ::Real, L::Real, ψ0::Uni
 
 end
 
-c, L = 1, 32
-
-## BA solution
-N = Int(L) 
-μ = get_mu(c, L, N)
-
-Nexact = N / L
-ψgs = ground_state(c, L, N)
-Eexact = energy(ψgs, μ) / L
+c, L, μ = 1, 32, 4
 
 ## cMPS optimization
 χ = 12
@@ -188,14 +178,11 @@ max_steps = 10000
 ψ3, E3, grad3, numfg3, history3 = lieb_liniger_ground_state_riemannian(c, μ, L, ψ0, precond_choice = :none, max_steps=max_steps);
 ψ4, E4, grad4, numfg4, history4 = lieb_liniger_ground_state_ordinary(c, μ, L, ψ0, max_steps=max_steps);
 
-@save "tmp_history_c$(c)_N$(N)_L$(L)_chi$(χ).jld2" history1 history2 history3 history4
-@load "tmp_history_c$(c)_N$(N)_L$(L)_chi$(χ).jld2" history1 history2 history3 history4
+@save "data/benchmark-history_c$(c)_mu$(μ)_L$(L)_chi$(χ).jld2" history1 history2 history3 history4
+@load "data/benchmark-history_c$(c)_mu$(μ)_L$(L)_chi$(χ).jld2" history1 history2 history3 history4
 
 error_in_E(x) = abs((x - Eexact) / Eexact) 
 @show error_in_E.([E1, E2, E3, E4])
-
-#font1 = Makie.to_font("/home/wtang/.local/share/fonts/cmunrm.ttf")
-font2 = Makie.to_font("/home/wtang/.local/share/fonts/STIXTwoText-Regular.otf")
 
 N1, _ = size(history1)
 N2, _ = size(history2)
@@ -203,7 +190,8 @@ N3, _ = size(history3)
 N4, _ = size(history4)
 Nmin = 1
 
-fig = Figure(backgroundcolor = :white, fontsize=18, resolution= (600, 600), fonts=(; regular=font2))
+#font2 = Makie.to_font("/home/wtang/.local/share/fonts/STIXTwoText-Regular.otf")
+fig = Figure(backgroundcolor = :white, fontsize=18, resolution= (600, 600))#, fonts=(; regular=font2))
 gf = fig[1, 1] = GridLayout() 
 gl = fig[2, 1] = GridLayout()
 
@@ -214,8 +202,8 @@ ax1 = Axis(gf[1, 1],
         )
 lines!(ax1, Nmin:N4, error_in_E.(history4[Nmin:N4, 1]), label=L"\text{plain}")
 lines!(ax1, Nmin:N3, error_in_E.(history3[Nmin:N3, 1]), label=L"\text{Riemannian, w/o precond.}")
-lines!(ax1, Nmin:N1, error_in_E.(history1[Nmin:N1, 1]), label=L"\text{Riemannian, w/ precond v1.}")
-lines!(ax1, Nmin:N2, error_in_E.(history2[Nmin:N2, 1]), label=L"\text{Riemannian, w/ precond v2.}")
+lines!(ax1, Nmin:N1, error_in_E.(history1[Nmin:N1, 1]), label=L"\text{Riemannian, w/ precond}")
+#lines!(ax1, Nmin:N2, error_in_E.(history2[Nmin:N2, 1]), label=L"\text{Riemannian, w/ precond v2.}")
 
 @show fig
 
@@ -227,7 +215,7 @@ ax2 = Axis(gf[2, 1],
 lines!(ax2, Nmin:N4, history4[Nmin:N4, 2])
 lines!(ax2, Nmin:N3, history3[Nmin:N3, 2])
 lines!(ax2, Nmin:N1, history1[Nmin:N1, 2])
-lines!(ax2, Nmin:N2, history2[Nmin:N2, 2])
+#lines!(ax2, Nmin:N2, history2[Nmin:N2, 2])
 
 @show fig
 
@@ -240,7 +228,7 @@ end
 
 #axislegend(ax1, position=:rb, framevisible=false)
 leg = Legend(gl[1,1], ax1, orientation=:horizontal, framecolor=:lightgrey, labelsize=15)
-leg.nbanks = 2
+leg.nbanks = 1
 
 @show fig
-Makie.save("fig-benchmark-riemannian-c$(c)_N$(N)_L$(L)_chi$(χ).pdf", fig)
+Makie.save("scripts/benchmark/fig-benchmark-riemannian-c$(c)_mu$(μ)_L$(L)_chi$(χ).pdf", fig)
